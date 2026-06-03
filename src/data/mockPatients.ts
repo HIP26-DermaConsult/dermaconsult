@@ -16,6 +16,8 @@ export const mockPatients: Patient[] = [
     diagnoses: ["Arterielle Hypertonie"],
     skinHistory: ["Atopische Dermatitis im Kindesalter"],
     notes: "Patientin berichtet wiederkehrendes Ekzem an den Händen.",
+    portalStatus: "active",
+    portalUserId: "u_patient_1",
   },
   {
     id: "p_002",

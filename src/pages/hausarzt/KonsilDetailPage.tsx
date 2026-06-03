@@ -7,9 +7,14 @@ import {
   MessageSquarePlus,
   Send,
   Stethoscope,
+  Share2,
+  FilePlus2,
+  CheckCircle2,
 } from "lucide-react";
 import { useKonsil } from "@/hooks/useKonsile";
 import { usePatient } from "@/hooks/usePatients";
+import { usePatientSummary } from "@/hooks/usePortal";
+import { useDataRequests } from "@/hooks/useDataRequests";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { konsilService } from "@/services/konsilService";
@@ -22,19 +27,26 @@ import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
 import { ImageGallery } from "@/components/konsile/ImageGallery";
 import { Timeline } from "@/components/konsile/Timeline";
 import { MessageThread } from "@/components/konsile/MessageThread";
+import { SharePatientSummaryModal } from "@/components/konsile/SharePatientSummaryModal";
+import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
+import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
 import { StatusBadge, UrgencyBadge } from "@/components/ui/StatusBadge";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { formatDateTime } from "@/utils/formatters";
+import { formatDate, formatDateTime } from "@/utils/formatters";
 
 export default function HausarztKonsilDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { konsil, loading, refresh } = useKonsil(id);
   const { patient } = usePatient(konsil?.patientId);
+  const { summary, refresh: refreshSummary } = usePatientSummary(konsil?.id);
+  const { requests, refresh: refreshRequests } = useDataRequests(konsil?.id);
   const { user } = useAuth();
   const { toast } = useToast();
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
 
   if (loading || !konsil) {
     return (
@@ -84,6 +96,12 @@ export default function HausarztKonsilDetailPage() {
         }
         action={
           <>
+            <Button variant="outline" onClick={() => setRequestOpen(true)}>
+              <FilePlus2 className="w-4 h-4" /> Daten anfordern
+            </Button>
+            <Button variant="outline" onClick={() => setShareOpen(true)}>
+              <Share2 className="w-4 h-4" /> {summary ? "Freigabe bearbeiten" : "Für Patient:in freigeben"}
+            </Button>
             <Button variant="outline">
               <Download className="w-4 h-4" /> Befund (PDF)
             </Button>
@@ -207,6 +225,30 @@ export default function HausarztKonsilDetailPage() {
         <div className="space-y-6">
           {patient && <PatientSummaryCard patient={patient} />}
           <Card>
+            <CardHeader
+              title="Patientenfreigabe"
+              action={
+                summary && (
+                  <span className="inline-flex items-center gap-1 text-xs text-emerald-700">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Freigegeben
+                  </span>
+                )
+              }
+            />
+            <CardBody className="text-sm">
+              {summary ? (
+                <p className="text-ink-600">
+                  Für die Patientin / den Patienten freigegeben am {formatDate(summary.sharedAt)}.
+                </p>
+              ) : (
+                <p className="text-ink-600">
+                  Noch keine patientenverständliche Zusammenfassung freigegeben.
+                </p>
+              )}
+            </CardBody>
+          </Card>
+          <PatientUploadsCard requests={requests} />
+          <Card>
             <CardHeader title="Verlauf" />
             <CardBody>
               <Timeline events={konsil.timeline} />
@@ -214,6 +256,24 @@ export default function HausarztKonsilDetailPage() {
           </Card>
         </div>
       </div>
+
+      <SharePatientSummaryModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        konsil={konsil}
+        existing={summary}
+        onShared={refreshSummary}
+      />
+      <RequestPatientDataModal
+        open={requestOpen}
+        onClose={() => setRequestOpen(false)}
+        patientId={konsil.patientId}
+        konsilId={konsil.id}
+        onCreated={() => {
+          refreshRequests();
+          refresh();
+        }}
+      />
     </>
   );
 }

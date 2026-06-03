@@ -85,6 +85,23 @@ export const konsilService = {
     save(all);
     return all[idx];
   },
+  async addTimelineEvent(
+    id: string,
+    event: Omit<TimelineEvent, "id" | "at">
+  ): Promise<Konsil> {
+    await wait();
+    const all = load();
+    const idx = all.findIndex((k) => k.id === id);
+    if (idx === -1) throw new Error("Konsil nicht gefunden");
+    const nowIso = new Date().toISOString();
+    all[idx] = {
+      ...all[idx],
+      updatedAt: nowIso,
+      timeline: [...all[idx].timeline, { ...event, id: uid("t"), at: nowIso }],
+    };
+    save(all);
+    return all[idx];
+  },
   async addMessage(id: string, message: Omit<Message, "id" | "createdAt">): Promise<Konsil> {
     await wait();
     const all = load();

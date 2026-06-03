@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, HelpCircle, Lock, Save, Send, Eye } from "lucide-react";
+import { ArrowLeft, HelpCircle, Lock, Save, Send, Eye, FilePlus2 } from "lucide-react";
 import { useKonsil } from "@/hooks/useKonsile";
 import { usePatient } from "@/hooks/usePatients";
+import { useDataRequests } from "@/hooks/useDataRequests";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { konsilService } from "@/services/konsilService";
@@ -15,6 +16,8 @@ import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
 import { ImageGallery } from "@/components/konsile/ImageGallery";
 import { Timeline } from "@/components/konsile/Timeline";
 import { MessageThread } from "@/components/konsile/MessageThread";
+import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
+import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
 import { StatusBadge, UrgencyBadge } from "@/components/ui/StatusBadge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { ExpertAssessment, Urgency } from "@/types/konsil";
@@ -28,8 +31,10 @@ export default function ExpertKonsilDetailPage() {
   const navigate = useNavigate();
   const { konsil, loading, refresh } = useKonsil(id);
   const { patient } = usePatient(konsil?.patientId);
+  const { requests, refresh: refreshRequests } = useDataRequests(konsil?.id);
   const { user } = useAuth();
   const { toast } = useToast();
+  const [requestOpen, setRequestOpen] = useState(false);
 
   const [internalNote, setInternalNote] = useState("");
   const [a, setA] = useState<ExpertAssessment>({
@@ -152,6 +157,9 @@ export default function ExpertKonsilDetailPage() {
                 <Eye className="w-4 h-4" /> Begutachtung starten
               </Button>
             )}
+            <Button variant="outline" onClick={() => setRequestOpen(true)}>
+              <FilePlus2 className="w-4 h-4" /> Daten anfordern
+            </Button>
             <Button variant="outline" onClick={() => setRueckfrageOpen(true)} disabled={!canEditAssessment}>
               <HelpCircle className="w-4 h-4" /> Rückfrage
             </Button>
@@ -326,6 +334,7 @@ export default function ExpertKonsilDetailPage() {
               />
             </CardBody>
           </Card>
+          <PatientUploadsCard requests={requests} />
           <Card>
             <CardHeader title="Verlauf" />
             <CardBody>
@@ -334,6 +343,17 @@ export default function ExpertKonsilDetailPage() {
           </Card>
         </div>
       </div>
+
+      <RequestPatientDataModal
+        open={requestOpen}
+        onClose={() => setRequestOpen(false)}
+        patientId={konsil.patientId}
+        konsilId={konsil.id}
+        onCreated={() => {
+          refreshRequests();
+          refresh();
+        }}
+      />
 
       <Modal
         open={rueckfrageOpen}

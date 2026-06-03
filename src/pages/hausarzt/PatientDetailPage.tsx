@@ -1,20 +1,29 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, Pencil, Plus, UserPlus } from "lucide-react";
 import { usePatient } from "@/hooks/usePatients";
 import { useKonsile } from "@/hooks/useKonsile";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { PatientSummaryCard } from "@/components/patients/PatientSummaryCard";
+import { InvitePatientModal } from "@/components/patients/InvitePatientModal";
 import { KonsilTable } from "@/components/konsile/KonsilTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 
+const PORTAL_STATUS_BADGE: Record<string, { label: string; className: string }> = {
+  active: { label: "Portal aktiv", className: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
+  invited: { label: "Einladung versendet", className: "bg-amber-50 text-amber-700 ring-amber-200" },
+};
+
 export default function PatientDetailPage() {
   const { id } = useParams();
-  const { patient, loading } = usePatient(id);
+  const { patient, loading, refresh } = usePatient(id);
   const { konsile } = useKonsile();
   const patientKonsile = konsile.filter((k) => k.patientId === id);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   if (loading || !patient) {
     return (
@@ -38,6 +47,11 @@ export default function PatientDetailPage() {
         }
         action={
           <>
+            {patient.portalStatus !== "active" && (
+              <Button variant="outline" onClick={() => setInviteOpen(true)}>
+                <UserPlus className="w-4 h-4" /> Portal-Zugang einladen
+              </Button>
+            )}
             <Link to={`/patients/${patient.id}/edit`}>
               <Button variant="outline">
                 <Pencil className="w-4 h-4" /> Bearbeiten
@@ -70,6 +84,38 @@ export default function PatientDetailPage() {
         </div>
         <div className="space-y-6">
           <Card>
+            <CardHeader
+              title="Patientenportal"
+              action={
+                PORTAL_STATUS_BADGE[patient.portalStatus ?? "none"] && (
+                  <Badge size="sm" className={PORTAL_STATUS_BADGE[patient.portalStatus!].className}>
+                    {PORTAL_STATUS_BADGE[patient.portalStatus!].label}
+                  </Badge>
+                )
+              }
+            />
+            <CardBody className="space-y-2 text-sm">
+              {patient.portalStatus === "active" ? (
+                <p className="text-ink-600">
+                  Die Patientin / der Patient hat Zugriff auf das Portal und sieht freigegebene
+                  Behandlungszusammenfassungen.
+                </p>
+              ) : (
+                <>
+                  <p className="text-ink-600">
+                    Laden Sie die Patientin / den Patienten ein, um Behandlungsinfos freizugeben.
+                  </p>
+                  <button
+                    onClick={() => setInviteOpen(true)}
+                    className="block text-brand-700 hover:underline"
+                  >
+                    → Portal-Zugang einladen
+                  </button>
+                </>
+              )}
+            </CardBody>
+          </Card>
+          <Card>
             <CardHeader title="Schnellzugriff" />
             <CardBody className="space-y-2 text-sm">
               <Link to="/konsile/new" className="block text-brand-700 hover:underline">
@@ -82,6 +128,13 @@ export default function PatientDetailPage() {
           </Card>
         </div>
       </div>
+
+      <InvitePatientModal
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        patient={patient}
+        onInvited={refresh}
+      />
     </>
   );
 }

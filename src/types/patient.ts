@@ -16,4 +16,10 @@ export interface Patient {
   diagnoses: string[];
   skinHistory: string[];
   notes?: string;
+  /** Patient portal access state. */
+  portalStatus?: PortalStatus;
+  /** Linked patient User account id once the portal invite is accepted. */
+  portalUserId?: string;
 }
+
+export type PortalStatus = "none" | "invited" | "active";

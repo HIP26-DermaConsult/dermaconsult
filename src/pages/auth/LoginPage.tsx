@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Stethoscope, ScanEye, Lock, Mail, ShieldCheck } from "lucide-react";
+import { Stethoscope, ScanEye, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Input";
 import type { UserRole } from "@/types/auth";
+
+function homeForRole(role: UserRole): string {
+  if (role === "hausarzt") return "/dashboard";
+  if (role === "patient") return "/portal";
+  return "/expert/dashboard";
+}
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -25,7 +31,7 @@ export default function LoginPage() {
     setLoading("creds");
     try {
       const user = await loginWithCredentials(email, password);
-      navigate(user.role === "hausarzt" ? "/dashboard" : "/expert/dashboard");
+      navigate(homeForRole(user.role));
     } catch {
       setError("Anmeldung fehlgeschlagen.");
     } finally {
@@ -36,7 +42,7 @@ export default function LoginPage() {
   async function demoLogin(role: UserRole) {
     setLoading(role);
     const user = await loginAs(role);
-    navigate(user.role === "hausarzt" ? "/dashboard" : "/expert/dashboard");
+    navigate(homeForRole(user.role));
     setLoading(null);
   }
 
@@ -141,6 +147,14 @@ export default function LoginPage() {
               loading={loading === "dermatologist"}
             >
               <ScanEye className="w-4 h-4" /> Als Dermatolog:in
+            </Button>
+            <Button
+              variant="outline"
+              className="sm:col-span-2"
+              onClick={() => demoLogin("patient")}
+              loading={loading === "patient"}
+            >
+              <UserRound className="w-4 h-4" /> Als Patient:in
             </Button>
           </div>
 
