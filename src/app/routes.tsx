@@ -12,11 +12,19 @@ import PatientFormPage from "@/pages/hausarzt/PatientFormPage";
 import ExpertDashboardPage from "@/pages/expert/ExpertDashboardPage";
 import ExpertKonsileListPage from "@/pages/expert/ExpertKonsileListPage";
 import ExpertKonsilDetailPage from "@/pages/expert/ExpertKonsilDetailPage";
+import PatientRegisterPage from "@/pages/auth/PatientRegisterPage";
+import PatientUploadPage from "@/pages/portal/PatientUploadPage";
+import PatientPortalPage from "@/pages/portal/PatientPortalPage";
+import PatientConsultationDetailPage from "@/pages/portal/PatientConsultationDetailPage";
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Public patient links */}
+      <Route path="/invite/:token" element={<PatientRegisterPage />} />
+      <Route path="/upload/:token" element={<PatientUploadPage />} />
 
       {/* Hausarzt routes */}
       <Route
@@ -50,6 +58,18 @@ export function AppRoutes() {
         <Route path="/expert/activity" element={<ExpertKonsileListPage />} />
       </Route>
 
+      {/* Patient portal routes */}
+      <Route
+        element={
+          <RequireAuth role="patient">
+            <AppLayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="/portal" element={<PatientPortalPage />} />
+        <Route path="/portal/consultations/:konsilId" element={<PatientConsultationDetailPage />} />
+      </Route>
+
       <Route path="/" element={<RoleRedirect />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
@@ -61,7 +81,13 @@ function RoleRedirect() {
   if (!raw) return <Navigate to="/login" replace />;
   try {
     const u = JSON.parse(raw);
-    return <Navigate to={u.role === "hausarzt" ? "/dashboard" : "/expert/dashboard"} replace />;
+    const target =
+      u.role === "hausarzt"
+        ? "/dashboard"
+        : u.role === "patient"
+          ? "/portal"
+          : "/expert/dashboard";
+    return <Navigate to={target} replace />;
   } catch {
     return <Navigate to="/login" replace />;
   }

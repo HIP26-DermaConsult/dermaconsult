@@ -1,5 +1,5 @@
 import { mockPatients } from "@/data/mockPatients";
-import type { Patient } from "@/types/patient";
+import type { Patient, PortalStatus } from "@/types/patient";
 import { uid } from "@/utils/formatters";
 
 const STORAGE_KEY = "derma_consult_patients";
@@ -47,6 +47,23 @@ export const patientService = {
   async remove(id: string): Promise<void> {
     await wait();
     save(load().filter((p) => p.id !== id));
+  },
+  async setPortalStatus(
+    id: string,
+    status: PortalStatus,
+    portalUserId?: string
+  ): Promise<Patient> {
+    await wait();
+    const all = load();
+    const idx = all.findIndex((p) => p.id === id);
+    if (idx === -1) throw new Error("Patient not found");
+    all[idx] = {
+      ...all[idx],
+      portalStatus: status,
+      ...(portalUserId ? { portalUserId } : {}),
+    };
+    save(all);
+    return all[idx];
   },
 };
 

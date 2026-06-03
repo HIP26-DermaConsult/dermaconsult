@@ -8,6 +8,7 @@ import {
   Activity,
   Settings,
   LifeBuoy,
+  HeartPulse,
 } from "lucide-react";
 import type { UserRole } from "@/types/auth";
 import { Logo } from "@/components/ui/Logo";
@@ -26,8 +27,18 @@ const expertNav = [
   { to: "/expert/activity", label: "Verlauf", icon: Activity },
 ];
 
+const patientNav = [
+  { to: "/portal", label: "Meine Behandlung", icon: HeartPulse },
+];
+
+const navByRole: Record<UserRole, typeof hausarztNav> = {
+  hausarzt: hausarztNav,
+  dermatologist: expertNav,
+  patient: patientNav,
+};
+
 export function Sidebar({ role }: { role: UserRole }) {
-  const nav = role === "hausarzt" ? hausarztNav : expertNav;
+  const nav = navByRole[role];
   return (
     <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-ink-200 bg-white h-screen sticky top-0">
       <div className="p-5 border-b border-ink-100">
@@ -38,7 +49,7 @@ export function Sidebar({ role }: { role: UserRole }) {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === "/dashboard" || item.to === "/expert/dashboard"}
+            end={item.to === "/dashboard" || item.to === "/expert/dashboard" || item.to === "/portal"}
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",

@@ -9,7 +9,13 @@ export function RequireAuth({ children, role }: { children: ReactNode; role?: Us
   if (loading) return null;
   if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
   if (role && user.role !== role) {
-    return <Navigate to={user.role === "hausarzt" ? "/dashboard" : "/expert/dashboard"} replace />;
+    const home =
+      user.role === "hausarzt"
+        ? "/dashboard"
+        : user.role === "patient"
+          ? "/portal"
+          : "/expert/dashboard";
+    return <Navigate to={home} replace />;
   }
   return <>{children}</>;
 }
