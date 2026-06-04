@@ -1,11 +1,13 @@
-import { Bell, LogOut, Search } from "lucide-react";
+import { Bell, Globe2, LogOut, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Avatar } from "@/components/ui/Avatar";
 import { RoleBadge } from "@/components/ui/RoleBadge";
 
 export function Topbar() {
   const { user, logout } = useAuth();
+  const { language, toggleLanguage, t } = useLanguage();
   const navigate = useNavigate();
 
   async function onLogout() {
@@ -30,8 +32,17 @@ export function Topbar() {
         </div>
         <div className="ml-auto flex items-center gap-3">
           <button
+            onClick={toggleLanguage}
+            className="inline-flex items-center gap-1.5 px-2.5 h-9 rounded-md hover:bg-ink-100 text-ink-600 text-xs font-medium"
+            aria-label={t("Sprache wechseln", "Switch language")}
+            title={t("Sprache wechseln", "Switch language")}
+          >
+            <Globe2 className="w-4 h-4" />
+            {language === "de" ? "DE" : "EN"}
+          </button>
+          <button
             className="relative p-2 rounded-md hover:bg-ink-100 text-ink-600"
-            aria-label="Benachrichtigungen"
+            aria-label={t("Benachrichtigungen", "Notifications")}
           >
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
@@ -48,7 +59,7 @@ export function Topbar() {
               onClick={onLogout}
               className="p-2 rounded-md hover:bg-ink-100 text-ink-600"
               aria-label="Abmelden"
-              title="Abmelden"
+              title={t("Abmelden", "Log out")}
             >
               <LogOut className="w-4 h-4" />
             </button>
