@@ -4,6 +4,7 @@ import { ArrowLeft, HelpCircle, Lock, Save, Send, Eye, FilePlus2 } from "lucide-
 import { useKonsil } from "@/hooks/useKonsile";
 import { usePatient } from "@/hooks/usePatients";
 import { useDataRequests } from "@/hooks/useDataRequests";
+import { useKonsilUploads } from "@/hooks/useKonsilUploads";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { konsilService } from "@/services/konsilService";
@@ -18,6 +19,7 @@ import { Timeline } from "@/components/konsile/Timeline";
 import { MessageThread } from "@/components/konsile/MessageThread";
 import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
 import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
+import { KonsilUploadsCard } from "@/components/konsile/KonsilUploadsCard";
 import { StatusBadge, UrgencyBadge } from "@/components/ui/StatusBadge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { ExpertAssessment, Urgency } from "@/types/konsil";
@@ -32,6 +34,7 @@ export default function ExpertKonsilDetailPage() {
   const { konsil, loading, refresh } = useKonsil(id);
   const { patient } = usePatient(konsil?.patientId);
   const { requests, refresh: refreshRequests } = useDataRequests(konsil?.id);
+  const { uploads, needsReview } = useKonsilUploads(konsil?.id);
   const { user } = useAuth();
   const { toast } = useToast();
   const [requestOpen, setRequestOpen] = useState(false);
@@ -214,6 +217,8 @@ export default function ExpertKonsilDetailPage() {
               <ImageGallery images={konsil.images} />
             </CardBody>
           </Card>
+
+          <KonsilUploadsCard uploads={uploads} needsReview={needsReview} />
 
           <Card>
             <CardHeader
