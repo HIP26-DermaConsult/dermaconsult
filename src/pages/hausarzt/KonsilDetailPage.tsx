@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -15,9 +15,11 @@ import { useKonsil } from "@/hooks/useKonsile";
 import { usePatient } from "@/hooks/usePatients";
 import { usePatientSummary } from "@/hooks/usePortal";
 import { useDataRequests } from "@/hooks/useDataRequests";
+import { useKonsilUploads } from "@/hooks/useKonsilUploads";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { konsilService } from "@/services/konsilService";
+import { konsilUploadService } from "@/services/konsilUploadService";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -30,9 +32,13 @@ import { MessageThread } from "@/components/konsile/MessageThread";
 import { SharePatientSummaryModal } from "@/components/konsile/SharePatientSummaryModal";
 import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
 import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
+import { KonsilUploadsCard } from "@/components/konsile/KonsilUploadsCard";
 import { StatusBadge, UrgencyBadge } from "@/components/ui/StatusBadge";
+import { CopyableLink } from "@/components/ui/CopyableLink";
+import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatDate, formatDateTime } from "@/utils/formatters";
+import { lanUploadUrlForToken } from "@/utils/konsilUpload";
 
 export default function HausarztKonsilDetailPage() {
   const { id } = useParams();
@@ -41,12 +47,21 @@ export default function HausarztKonsilDetailPage() {
   const { patient } = usePatient(konsil?.patientId);
   const { summary, refresh: refreshSummary } = usePatientSummary(konsil?.id);
   const { requests, refresh: refreshRequests } = useDataRequests(konsil?.id);
+  const { uploads, needsReview, setUploads } = useKonsilUploads(konsil?.id);
   const { user } = useAuth();
   const { toast } = useToast();
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [requestOpen, setRequestOpen] = useState(false);
+  const [appOrigin, setAppOrigin] = useState<string | undefined>();
+
+  useEffect(() => {
+    konsilUploadService
+      .getNetworkInfo()
+      .then((info) => setAppOrigin(info.appOrigin))
+      .catch(() => setAppOrigin(undefined));
+  }, []);
 
   if (loading || !konsil) {
     return (
@@ -83,6 +98,17 @@ export default function HausarztKonsilDetailPage() {
     await refresh();
     toast({ variant: "success", title: "Konsil abgeschlossen" });
   }
+
+  async function markUploadsReviewed() {
+    if (!konsil) return;
+    const next = await konsilUploadService.markReviewed(konsil.id);
+    setUploads(next);
+    toast({ variant: "success", title: "Uploads als geprueft markiert" });
+  }
+
+  const patientUploadUrl = lanUploadUrlForToken(konsil.uploadToken, appOrigin);
+  const hausarztUploadUrl = `${patientUploadUrl}?source=hausarzt`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(hausarztUploadUrl)}`;
 
   return (
     <>
@@ -156,6 +182,12 @@ export default function HausarztKonsilDetailPage() {
               <ImageGallery images={konsil.images} />
             </CardBody>
           </Card>
+
+          <KonsilUploadsCard
+            uploads={uploads}
+            needsReview={needsReview}
+            onMarkReviewed={markUploadsReviewed}
+          />
 
           {konsil.expertAssessment && (
             <Card className="border-emerald-200">
@@ -245,6 +277,28 @@ export default function HausarztKonsilDetailPage() {
                   Noch keine patientenverständliche Zusammenfassung freigegeben.
                 </p>
               )}
+            </CardBody>
+          </Card>
+          <Card className={needsReview ? "border-amber-200" : undefined}>
+            <CardHeader
+              title="Konsil-Upload QR"
+              description="Einmaliger Link fuer dieses Konsil"
+              action={
+                needsReview ? (
+                  <Badge size="sm" className="bg-amber-50 text-amber-700 ring-amber-200">
+                    Neue Uploads
+                  </Badge>
+                ) : undefined
+              }
+            />
+            <CardBody className="space-y-3">
+              <div className="flex justify-center rounded-lg border border-ink-200 bg-white p-3">
+                <img src={qrSrc} alt="QR-Code fuer Konsil-Upload" className="w-40 h-40" />
+              </div>
+              <CopyableLink url={hausarztUploadUrl} />
+              <p className="text-xs text-ink-500">
+                Fuer Patient:innen denselben Link ohne den Zusatz <span className="font-mono">?source=hausarzt</span> teilen.
+              </p>
             </CardBody>
           </Card>
           <PatientUploadsCard requests={requests} />

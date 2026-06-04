@@ -24,6 +24,7 @@ export function AppRoutes() {
 
       {/* Public patient links */}
       <Route path="/invite/:token" element={<PatientRegisterPage />} />
+      <Route path="/upload/konsil/:token" element={<PatientUploadPage />} />
       <Route path="/upload/:token" element={<PatientUploadPage />} />
 
       {/* Hausarzt routes */}

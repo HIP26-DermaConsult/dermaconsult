@@ -8,17 +8,18 @@ import type {
   TimelineEvent,
 } from "@/types/konsil";
 import { uid } from "@/utils/formatters";
+import { ensureKonsilUploadToken, uploadTokenForKonsilId } from "@/utils/konsilUpload";
 
 const STORAGE_KEY = "derma_consult_konsile";
 
 function load(): Konsil[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Konsil[];
+    if (raw) return (JSON.parse(raw) as Konsil[]).map(ensureKonsilUploadToken);
   } catch {
     /* ignore */
   }
-  return mockKonsile;
+  return mockKonsile.map(ensureKonsilUploadToken);
 }
 
 function save(konsile: Konsil[]) {
@@ -45,6 +46,7 @@ export const konsilService = {
       createdByUserId,
       createdAt: nowIso,
       updatedAt: nowIso,
+      uploadToken: uploadTokenForKonsilId(id),
       status: "submitted",
       urgency: input.urgency,
       reason: input.reason,
