@@ -27,6 +27,30 @@ export const authService = {
     return user;
   },
 
+  async loginAsDemoUser(userId: string): Promise<User> {
+    await delay(250);
+    const user = [...mockUsers, ...loadPatientUsers()].find((u) => u.id === userId);
+    if (!user) throw new Error("Demo user not found");
+    persist(user);
+    return user;
+  },
+
+  async loginAsPatient(patientId: string): Promise<User> {
+    await delay(250);
+    const patient = await patientService.get(patientId);
+    if (!patient) throw new Error("Patient not found");
+    const user: User = {
+      id: patient.portalUserId || `u_demo_patient_${patient.id}`,
+      name: `${patient.firstName} ${patient.lastName}`,
+      email: patient.email || `${patient.id}@demo.patient`,
+      role: "patient",
+      patientId: patient.id,
+      avatarColor: "bg-violet-600",
+    };
+    persist(user);
+    return user;
+  },
+
   /** Accept a portal invite, create the patient account and start a session. */
   async registerPatient(
     token: string,
