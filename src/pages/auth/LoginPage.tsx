@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Stethoscope, ScanEye, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { Globe2, Stethoscope, ScanEye, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Input";
@@ -16,6 +17,7 @@ function homeForRole(role: UserRole): string {
 export default function LoginPage() {
   const navigate = useNavigate();
   const { loginAs, loginWithCredentials } = useAuth();
+  const { language, toggleLanguage, t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState<"creds" | UserRole | null>(null);
@@ -47,6 +49,17 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+    <button
+      type="button"
+      onClick={toggleLanguage}
+      className="fixed top-4 right-4 z-20 inline-flex items-center gap-1.5 px-2.5 h-9 rounded-md bg-white/90 border border-ink-200 hover:bg-ink-50 text-ink-600 text-xs font-medium shadow-sm"
+      aria-label={t("Sprache wechseln", "Switch language")}
+      title={t("Sprache wechseln", "Switch language")}
+    >
+      <Globe2 className="w-4 h-4" />
+      {language === "de" ? "DE" : "EN"}
+    </button>
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
       <div className="hidden lg:flex flex-col justify-between p-10 bg-gradient-to-br from-brand-700 via-brand-600 to-brand-800 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -167,6 +180,7 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
