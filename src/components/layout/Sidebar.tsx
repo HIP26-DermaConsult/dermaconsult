@@ -13,6 +13,7 @@ import {
 import type { UserRole } from "@/types/auth";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/utils/formatters";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const hausarztNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -38,7 +39,17 @@ const navByRole: Record<UserRole, typeof hausarztNav> = {
 };
 
 export function Sidebar({ role }: { role: UserRole }) {
+  const { t } = useLanguage();
   const nav = navByRole[role];
+  const labels: Record<string, string> = {
+    Dashboard: "Dashboard",
+    "Neues Konsil": "New consultation",
+    Konsile: "Consultations",
+    Patienten: "Patients",
+    Anfragen: "Requests",
+    Verlauf: "Activity",
+    "Meine Behandlung": "My treatment",
+  };
   return (
     <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-ink-200 bg-white h-screen sticky top-0">
       <div className="p-5 border-b border-ink-100">
@@ -61,16 +72,16 @@ export function Sidebar({ role }: { role: UserRole }) {
             }
           >
             <item.icon className="w-4 h-4" />
-            <span>{item.label}</span>
+            <span>{t(item.label, labels[item.label] || item.label)}</span>
           </NavLink>
         ))}
       </nav>
       <div className="p-3 border-t border-ink-100 space-y-1">
         <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-ink-600 hover:bg-ink-50">
-          <Settings className="w-4 h-4" /> Einstellungen
+          <Settings className="w-4 h-4" /> {t("Einstellungen", "Settings")}
         </button>
         <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-ink-600 hover:bg-ink-50">
-          <LifeBuoy className="w-4 h-4" /> Hilfe
+          <LifeBuoy className="w-4 h-4" /> {t("Hilfe", "Help")}
         </button>
       </div>
     </aside>

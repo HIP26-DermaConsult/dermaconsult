@@ -1,4 +1,5 @@
 import type { Konsil } from "@/types/konsil";
+import { uploadTokenForKonsilId } from "@/utils/konsilUpload";
 
 const now = new Date();
 const d = (daysAgo: number, hour = 10) => {
@@ -11,6 +12,7 @@ const d = (daysAgo: number, hour = 10) => {
 export const mockKonsile: Konsil[] = [
   {
     id: "K-2026-0001",
+    uploadToken: uploadTokenForKonsilId("K-2026-0001"),
     patientId: "p_001",
     createdByUserId: "u_hausarzt_1",
     assignedExpertId: "u_derm_1",
@@ -69,6 +71,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0002",
+    uploadToken: uploadTokenForKonsilId("K-2026-0002"),
     patientId: "p_002",
     createdByUserId: "u_hausarzt_1",
     assignedExpertId: "u_derm_1",
@@ -105,6 +108,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0003",
+    uploadToken: uploadTokenForKonsilId("K-2026-0003"),
     patientId: "p_003",
     createdByUserId: "u_hausarzt_1",
     assignedExpertId: "u_derm_1",
@@ -149,6 +153,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0004",
+    uploadToken: uploadTokenForKonsilId("K-2026-0004"),
     patientId: "p_004",
     createdByUserId: "u_hausarzt_1",
     assignedExpertId: "u_derm_1",
@@ -202,6 +207,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0005",
+    uploadToken: uploadTokenForKonsilId("K-2026-0005"),
     patientId: "p_005",
     createdByUserId: "u_hausarzt_1",
     createdAt: d(0, 9),
@@ -227,6 +233,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0006",
+    uploadToken: uploadTokenForKonsilId("K-2026-0006"),
     patientId: "p_006",
     createdByUserId: "u_hausarzt_1",
     assignedExpertId: "u_derm_1",
@@ -274,6 +281,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0007",
+    uploadToken: uploadTokenForKonsilId("K-2026-0007"),
     patientId: "p_002",
     createdByUserId: "u_hausarzt_1",
     createdAt: d(1, 14),
@@ -298,6 +306,7 @@ export const mockKonsile: Konsil[] = [
   },
   {
     id: "K-2026-0008",
+    uploadToken: uploadTokenForKonsilId("K-2026-0008"),
     patientId: "p_003",
     createdByUserId: "u_hausarzt_1",
     assignedExpertId: "u_derm_1",
