@@ -27,6 +27,12 @@ export const authService = {
     return user;
   },
 
+  async loginAsDemoUser(user: User): Promise<User> {
+    await delay(250);
+    persist(user);
+    return user;
+  },
+
   /** Accept a portal invite, create the patient account and start a session. */
   async registerPatient(
     token: string,

@@ -5,7 +5,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Input";
-import type { UserRole } from "@/types/auth";
+import { Modal } from "@/components/ui/Modal";
+import { mockUsers } from "@/data/mockUsers";
+import { mockPatients } from "@/data/mockPatients";
+import type { User, UserRole } from "@/types/auth";
 
 function homeForRole(role: UserRole): string {
   if (role === "hausarzt") return "/dashboard";
@@ -15,10 +18,11 @@ function homeForRole(role: UserRole): string {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { loginAs, loginWithCredentials } = useAuth();
+  const { loginAsDemoUser, loginWithCredentials } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState<"creds" | UserRole | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [loading, setLoading] = useState<"creds" | string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -39,12 +43,33 @@ export default function LoginPage() {
     }
   }
 
-  async function demoLogin(role: UserRole) {
-    setLoading(role);
-    const user = await loginAs(role);
-    navigate(homeForRole(user.role));
+  async function demoLogin(user: User) {
+    setLoading(user.id);
+    const loggedInUser = await loginAsDemoUser(user);
+    navigate(homeForRole(loggedInUser.role));
     setLoading(null);
   }
+
+  function demoUsersForRole(role: UserRole): User[] {
+    if (role === "patient") {
+      return mockPatients.map((patient, index) => ({
+        id: patient.portalUserId || `u_patient_demo_${patient.id}`,
+        name: `${patient.firstName} ${patient.lastName}`,
+        email: patient.email || `patient-${index + 1}@demo.local`,
+        role: "patient",
+        patientId: patient.id,
+        avatarColor: "bg-violet-600",
+      }));
+    }
+    return mockUsers.filter((user) => user.role === role);
+  }
+
+  async function chooseRole(role: UserRole) {
+    setSelectedRole(role);
+    setError(null);
+  }
+
+  const selectedDemoUsers = selectedRole ? demoUsersForRole(selectedRole) : [];
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
@@ -136,23 +161,20 @@ export default function LoginPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Button
               variant="outline"
-              onClick={() => demoLogin("hausarzt")}
-              loading={loading === "hausarzt"}
+              onClick={() => chooseRole("hausarzt")}
             >
               <Stethoscope className="w-4 h-4" /> Als Hausarzt:in
             </Button>
             <Button
               variant="outline"
-              onClick={() => demoLogin("dermatologist")}
-              loading={loading === "dermatologist"}
+              onClick={() => chooseRole("dermatologist")}
             >
               <ScanEye className="w-4 h-4" /> Als Dermatolog:in
             </Button>
             <Button
               variant="outline"
               className="sm:col-span-2"
-              onClick={() => demoLogin("patient")}
-              loading={loading === "patient"}
+              onClick={() => chooseRole("patient")}
             >
               <UserRound className="w-4 h-4" /> Als Patient:in
             </Button>
@@ -166,6 +188,37 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={selectedRole !== null}
+        onClose={() => setSelectedRole(null)}
+        title={
+          selectedRole === "hausarzt"
+            ? "Hausarzt:in auswaehlen"
+            : selectedRole === "dermatologist"
+              ? "Dermatolog:in auswaehlen"
+              : "Patient:in auswaehlen"
+        }
+        description="Waehlen Sie den Demo-Account, mit dem Sie fortfahren moechten."
+        size="md"
+      >
+        <div className="space-y-2">
+          {selectedDemoUsers.map((user) => (
+            <button
+              key={user.id}
+              type="button"
+              className="w-full rounded-md border border-ink-200 bg-white px-3 py-2 text-left hover:border-brand-300 hover:bg-brand-50 focus-ring disabled:opacity-60"
+              onClick={() => demoLogin(user)}
+              disabled={loading === user.id}
+            >
+              <div className="text-sm font-medium text-ink-900">{user.name}</div>
+              <div className="text-xs text-ink-500">
+                {user.practiceName || user.department || user.email}
+              </div>
+            </button>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 }

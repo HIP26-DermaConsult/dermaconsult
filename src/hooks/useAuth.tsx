@@ -14,6 +14,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   loginAs: (role: UserRole) => Promise<User>;
+  loginAsDemoUser: (user: User) => Promise<User>;
   loginWithCredentials: (email: string, password: string) => Promise<User>;
   registerPatient: (
     token: string,
@@ -29,12 +30,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setUser(authService.getCurrentUser());
-    setLoading(false);
+    authService.logout().finally(() => {
+      setUser(null);
+      setLoading(false);
+    });
   }, []);
 
   const loginAs = useCallback(async (role: UserRole) => {
     const u = await authService.loginAs(role);
+    setUser(u);
+    return u;
+  }, []);
+
+  const loginAsDemoUser = useCallback(async (user: User) => {
+    const u = await authService.loginAsDemoUser(user);
     setUser(u);
     return u;
   }, []);
@@ -60,8 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, loginAs, loginWithCredentials, registerPatient, logout }),
-    [user, loading, loginAs, loginWithCredentials, registerPatient, logout]
+    () => ({ user, loading, loginAs, loginAsDemoUser, loginWithCredentials, registerPatient, logout }),
+    [user, loading, loginAs, loginAsDemoUser, loginWithCredentials, registerPatient, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

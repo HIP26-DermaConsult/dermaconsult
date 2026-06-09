@@ -70,25 +70,8 @@ export function AppRoutes() {
         <Route path="/portal/consultations/:konsilId" element={<PatientConsultationDetailPage />} />
       </Route>
 
-      <Route path="/" element={<RoleRedirect />} />
+      <Route path="/" element={<LoginPage />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
-}
-
-function RoleRedirect() {
-  const raw = typeof window !== "undefined" ? localStorage.getItem("derma_consult_user") : null;
-  if (!raw) return <Navigate to="/login" replace />;
-  try {
-    const u = JSON.parse(raw);
-    const target =
-      u.role === "hausarzt"
-        ? "/dashboard"
-        : u.role === "patient"
-          ? "/portal"
-          : "/expert/dashboard";
-    return <Navigate to={target} replace />;
-  } catch {
-    return <Navigate to="/login" replace />;
-  }
 }
