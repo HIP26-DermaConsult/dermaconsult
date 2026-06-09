@@ -8,6 +8,7 @@ import { Field, Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { mockUsers } from "@/data/mockUsers";
 import { mockPatients } from "@/data/mockPatients";
+import { mockKonsile } from "@/data/mockKonsile";
 import type { User, UserRole } from "@/types/auth";
 
 function homeForRole(role: UserRole): string {
@@ -52,14 +53,19 @@ export default function LoginPage() {
 
   function demoUsersForRole(role: UserRole): User[] {
     if (role === "patient") {
-      return mockPatients.map((patient, index) => ({
-        id: patient.portalUserId || `u_patient_demo_${patient.id}`,
-        name: `${patient.firstName} ${patient.lastName}`,
-        email: patient.email || `patient-${index + 1}@demo.local`,
-        role: "patient",
-        patientId: patient.id,
-        avatarColor: "bg-violet-600",
-      }));
+      const patientIdsWithOpenKonsile = new Set(
+        mockKonsile.filter((konsil) => konsil.status !== "closed").map((konsil) => konsil.patientId)
+      );
+      return mockPatients
+        .filter((patient) => patientIdsWithOpenKonsile.has(patient.id))
+        .map((patient, index) => ({
+          id: patient.portalUserId || `u_patient_demo_${patient.id}`,
+          name: `${patient.firstName} ${patient.lastName}`,
+          email: patient.email || `patient-${index + 1}@demo.local`,
+          role: "patient",
+          patientId: patient.id,
+          avatarColor: "bg-violet-600",
+        }));
     }
     return mockUsers.filter((user) => user.role === role);
   }
