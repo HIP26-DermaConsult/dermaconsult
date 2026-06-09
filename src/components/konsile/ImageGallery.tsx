@@ -1,5 +1,6 @@
 import { Image as ImageIcon, Smartphone, Monitor } from "lucide-react";
 import type { ImageAttachment } from "@/types/konsil";
+import { absoluteImageUrl } from "@/services/konsilUploadService";
 import { formatDateTime } from "@/utils/formatters";
 import { Badge } from "@/components/ui/Badge";
 
@@ -9,11 +10,17 @@ export function ImageGallery({ images }: { images: ImageAttachment[] }) {
   }
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-      {images.map((img) => (
-        <div key={img.id} className="rounded-lg border border-ink-200 bg-white overflow-hidden">
-          <div className="aspect-square bg-gradient-to-br from-ink-100 to-ink-200 grid place-items-center">
-            <ImageIcon className="w-8 h-8 text-ink-400" />
-          </div>
+      {images.map((img) => {
+        const src = absoluteImageUrl(img);
+        return (
+          <div key={img.id} className="rounded-lg border border-ink-200 bg-white overflow-hidden">
+            <div className="aspect-square bg-gradient-to-br from-ink-100 to-ink-200 grid place-items-center">
+              {src ? (
+                <img src={src} alt={img.filename} className="w-full h-full object-cover" />
+              ) : (
+                <ImageIcon className="w-8 h-8 text-ink-400" />
+              )}
+            </div>
           <div className="p-2.5 text-xs space-y-1">
             <div className="font-medium text-ink-800 truncate" title={img.filename}>
               {img.filename}
@@ -36,7 +43,8 @@ export function ImageGallery({ images }: { images: ImageAttachment[] }) {
             )}
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

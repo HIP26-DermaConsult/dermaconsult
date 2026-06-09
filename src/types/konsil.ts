@@ -30,8 +30,21 @@ export interface ImageAttachment {
   filename: string;
   source: "desktop" | "mobile";
   previewUrl?: string;
+  url?: string;
   uploadedAt: string;
   label?: string;
+}
+
+export type KonsilUploadSource = "hausarzt" | "patient" | "unknown";
+
+export interface KonsilUpload {
+  id: string;
+  konsilId: string;
+  source: KonsilUploadSource;
+  submittedAt: string;
+  note?: string;
+  images: ImageAttachment[];
+  reviewedByHausarzt: boolean;
 }
 
 export interface Message {
@@ -78,6 +91,7 @@ export interface Konsil {
   assignedExpertId?: string;
   createdAt: string;
   updatedAt: string;
+  uploadToken?: string;
   status: KonsilStatus;
   urgency: Urgency;
   reason: string;
