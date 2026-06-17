@@ -3,7 +3,30 @@
     "allow": [
       "Bash(npm install *)",
       "Bash(npx tsc *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "WebSearch",
+      "WebFetch(domain:arzt.bayern)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://arztsuche.116117.de/)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://arztsuche.116117.de/api/data)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://arzt.bayern/)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://gesund.bund.de/en/search/doctors)",
+      "WebFetch(domain:github.com)",
+      "Read(//private/tmp/**)",
+      "Bash(rm -f cj.txt)",
+      "Bash(curl -s -c cj.txt -o /dev/null -w \"HTTP %{http_code}\\\\n\" https://arztsuche.116117.de/)",
+      "Bash(awk '{print $6}')",
+      "Bash(curl -s -b cj.txt -o resp.txt -w \"HTTP %{http_code} bytes=%{size_download} type=%{content_type}\\\\n\" \"https://arztsuche.116117.de/api/data\")",
+      "Bash(curl -s -b cj.txt -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' --data '{\"plz\":\"80331\",\"umkreis\":10}' -o resp2.txt -w 'HTTP %{http_code} bytes=%{size_download} type=%{content_type}\\\\n' https://arztsuche.116117.de/api/data)",
+      "Bash(curl -s \"https://arzt.bayern/top.html\")",
+      "Bash(curl -s \"https://arzt.bayern/AinX.html\")",
+      "Bash(curl -s -o /dev/null -w \"ainx2.nocache.js HTTP %{http_code}\\\\n\" \"https://arzt.bayern/ainx2.nocache.js\")",
+      "Bash(curl -s \"https://arzt.bayern/ainx2.nocache.js\")",
+      "Bash(grep -oE \"[A-Z0-9]{30,}\")",
+      "Bash(curl -s https://arzt.bayern/__TRACKED_VAR__ -o perm.js)",
+      "Bash(grep -oE \"'[^']{3,40}'\" perm.js)",
+      "Bash(grep -oE '\"[^\"]{3,40}\"' perm.js)",
+      "Bash(curl -s -o body.txt -w \"GET docservice -> HTTP %{http_code} bytes=%{size_download}\\\\n\" \"https://arzt.bayern/docservice\")",
+      "Bash(curl -s -X POST -H 'Content-Type: text/x-gwt-rpc; charset=utf-8' --data x -o body2.txt -w 'POST docservice -> HTTP %{http_code} bytes=%{size_download}\\\\n' https://arzt.bayern/docservice)"
     ]
   }
 }

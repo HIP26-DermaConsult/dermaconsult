@@ -21,6 +21,7 @@ local-data/
 .DS_Store
 .vscode/
 .idea/
+.claude/
 
 # Environment
 .env
