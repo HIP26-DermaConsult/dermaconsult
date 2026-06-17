@@ -28,10 +28,11 @@ export function MobileCaptureQrModal({
 
   useEffect(() => {
     if (!open) return;
+    let cancelled = false;
     const interval = setInterval(async () => {
       try {
         const images = await konsilUploadService.pollSession(sessionToken);
-        if (images.length > 0) {
+        if (!cancelled && images.length > 0) {
           onSimulateUpload(images);
           onClose();
         }
@@ -39,7 +40,10 @@ export function MobileCaptureQrModal({
         // ignore transient poll errors
       }
     }, 2000);
-    return () => clearInterval(interval);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [open, sessionToken, onSimulateUpload, onClose]);
 
   function simulate() {

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { Upload, Smartphone, Trash2, Image as ImageIcon, Monitor } from "lucide-react";
 import type { ImageAttachment } from "@/types/konsil";
 import { Button } from "@/components/ui/Button";
@@ -13,7 +13,7 @@ export function ImageUploadArea({
   onChange,
 }: {
   images: ImageAttachment[];
-  onChange: (next: ImageAttachment[]) => void;
+  onChange: Dispatch<SetStateAction<ImageAttachment[]>>;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
@@ -38,9 +38,11 @@ export function ImageUploadArea({
     onChange(images.map((i) => (i.id === id ? { ...i, label } : i)));
   }
 
-  function handleMobileImages(newOnes: ImageAttachment[]) {
-    onChange([...images, ...newOnes]);
-  }
+  const handleMobileImages = useCallback((newOnes: ImageAttachment[]) => {
+    onChange((prev: ImageAttachment[]) => [...prev, ...newOnes]);
+  }, [onChange]);
+
+  const closeQr = useCallback(() => setQrOpen(false), []);
 
   return (
     <div className="space-y-4">
@@ -150,7 +152,7 @@ export function ImageUploadArea({
 
       <MobileCaptureQrModal
         open={qrOpen}
-        onClose={() => setQrOpen(false)}
+        onClose={closeQr}
         onSimulateUpload={handleMobileImages}
       />
     </div>
