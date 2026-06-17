@@ -1,8 +1,6 @@
 import type { ImageAttachment, KonsilUpload, KonsilUploadSource } from "@/types/konsil";
 
-const API_BASE =
-  import.meta.env.VITE_UPLOAD_API_BASE ||
-  (typeof window !== "undefined" ? `${window.location.protocol}//${window.location.hostname}:3001` : "http://localhost:3001");
+const API_BASE = import.meta.env.VITE_UPLOAD_API_BASE ?? "";
 
 export interface KonsilUploadTarget {
   token: string;
