@@ -30,10 +30,17 @@ function getLanIp() {
   return "localhost";
 }
 
-function konsilIdFromToken(token) {
-  if (!token || !token.startsWith("konsil-")) return null;
-  const id = token.slice("konsil-".length);
-  return /^K-\d{4}-\d{4}$/.test(id) ? id : null;
+function parseToken(token) {
+  if (!token) return null;
+  if (token.startsWith("konsil-")) {
+    const id = token.slice("konsil-".length);
+    if (/^K-\d{4}-\d{4}$/.test(id)) return { type: "konsil", id };
+  }
+  if (token.startsWith("sess-")) {
+    const id = token.slice("sess-".length);
+    if (id.length > 0) return { type: "session", id: token };
+  }
+  return null;
 }
 
 async function loadDb() {
@@ -129,20 +136,21 @@ createServer(async (req, res) => {
     const targetMatch = url.pathname.match(/^\/api\/konsil-upload\/([^/]+)$/);
     if (req.method === "GET" && targetMatch) {
       const token = decodeURIComponent(targetMatch[1]);
-      const konsilId = konsilIdFromToken(token);
-      if (!konsilId) return sendJson(res, 404, { error: "Ungueltiger Upload-Link." });
+      const parsed = parseToken(token);
+      if (!parsed) return sendJson(res, 404, { error: "Ungueltiger Upload-Link." });
+      const konsilId = parsed.type === "konsil" ? parsed.id : "SESSION";
       return sendJson(res, 200, { token, konsilId });
     }
 
     if (req.method === "POST" && targetMatch) {
       const token = decodeURIComponent(targetMatch[1]);
-      const konsilId = konsilIdFromToken(token);
-      if (!konsilId) return sendJson(res, 404, { error: "Ungueltiger Upload-Link." });
+      const parsed = parseToken(token);
+      if (!parsed) return sendJson(res, 404, { error: "Ungueltiger Upload-Link." });
 
       const parts = parseMultipart(await getBody(req), req.headers["content-type"] || "");
-      const source = parts.find((part) => part.name === "source")?.body.toString("utf8") || "unknown";
-      const note = parts.find((part) => part.name === "note")?.body.toString("utf8").trim() || undefined;
-      const files = parts.filter((part) => part.name === "images" && part.filename);
+      const source = parts.find((p) => p.name === "source")?.body.toString("utf8") || "unknown";
+      const note = parts.find((p) => p.name === "note")?.body.toString("utf8").trim() || undefined;
+      const files = parts.filter((p) => p.name === "images" && p.filename);
       if (files.length === 0) return sendJson(res, 400, { error: "Bitte mindestens ein Bild hochladen." });
 
       const now = new Date().toISOString();
@@ -160,6 +168,7 @@ createServer(async (req, res) => {
         });
       }
 
+      const konsilId = parsed.id;
       const entry = {
         id: `up_${randomUUID().slice(0, 8)}`,
         konsilId,
@@ -191,6 +200,16 @@ createServer(async (req, res) => {
       );
       await saveDb(db);
       return sendJson(res, 200, db.uploads.filter((upload) => upload.konsilId === konsilId));
+    }
+
+    const sessionPollMatch = url.pathname.match(/^\/api\/session-upload\/([^/]+)$/);
+    if (req.method === "GET" && sessionPollMatch) {
+      const sessionToken = decodeURIComponent(sessionPollMatch[1]);
+      const db = await loadDb();
+      const allImages = (db.uploads || [])
+        .filter((u) => u.konsilId === sessionToken)
+        .flatMap((u) => u.images);
+      return sendJson(res, 200, allImages);
     }
 
     sendJson(res, 404, { error: "Not found" });
