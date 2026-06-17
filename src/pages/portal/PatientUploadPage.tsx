@@ -11,6 +11,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Badge } from "@/components/ui/Badge";
 
+const SESSION_KONSIL_ID = "SESSION";
+
 type PageState =
   | { status: "loading" }
   | { status: "invalid"; reason: string }
@@ -129,12 +131,12 @@ export default function PatientUploadPage() {
                 </span>
               }
               description={
-                state.konsilId === "SESSION"
+                state.konsilId === SESSION_KONSIL_ID
                   ? "Smartphone-Upload"
                   : `Ziel: ${state.konsilId}`
               }
               action={
-                state.konsilId !== "SESSION" ? (
+                state.konsilId !== SESSION_KONSIL_ID ? (
                   <Badge className="bg-ink-100 text-ink-700 ring-ink-200">
                     {source === "hausarzt" ? "Hausarzt:in" : "Patient:in"}
                   </Badge>

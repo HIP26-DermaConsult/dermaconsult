@@ -176,7 +176,7 @@ createServer(async (req, res) => {
         submittedAt: now,
         note,
         images,
-        reviewedByHausarzt: source !== "patient",
+        reviewedByHausarzt: source === "hausarzt",
       };
       const db = await loadDb();
       db.uploads = [entry, ...(db.uploads || [])];

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import type { ImageAttachment } from "@/types/konsil";
@@ -16,15 +16,15 @@ export function MobileCaptureQrModal({
   onClose: () => void;
   onSimulateUpload: (images: ImageAttachment[]) => void;
 }) {
-  const sessionTokenRef = useRef(`sess-${Math.random().toString(36).slice(2, 10)}`);
+  const [sessionToken, setSessionToken] = useState(
+    () => `sess-${Math.random().toString(36).slice(2, 10)}`
+  );
 
   useEffect(() => {
     if (open) {
-      sessionTokenRef.current = `sess-${Math.random().toString(36).slice(2, 10)}`;
+      setSessionToken(`sess-${Math.random().toString(36).slice(2, 10)}`);
     }
   }, [open]);
-
-  const sessionToken = sessionTokenRef.current;
 
   const uploadUrl = lanUploadUrlForToken(sessionToken);
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(uploadUrl)}`;
