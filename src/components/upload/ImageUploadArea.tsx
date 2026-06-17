@@ -27,15 +27,15 @@ export function ImageUploadArea({
       source: "desktop",
       uploadedAt: new Date().toISOString(),
     }));
-    onChange([...images, ...additions]);
+    onChange((prev) => [...prev, ...additions]);
   }
 
   function remove(id: string) {
-    onChange(images.filter((i) => i.id !== id));
+    onChange((prev) => prev.filter((i) => i.id !== id));
   }
 
   function setLabel(id: string, label: string) {
-    onChange(images.map((i) => (i.id === id ? { ...i, label } : i)));
+    onChange((prev) => prev.map((i) => (i.id === id ? { ...i, label } : i)));
   }
 
   const handleMobileImages = useCallback((newOnes: ImageAttachment[]) => {

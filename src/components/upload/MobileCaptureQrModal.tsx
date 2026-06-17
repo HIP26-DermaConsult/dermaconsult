@@ -1,13 +1,11 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import type { ImageAttachment } from "@/types/konsil";
 import { uid } from "@/utils/formatters";
 import { Smartphone, Wifi, Loader2 } from "lucide-react";
 import { konsilUploadService } from "@/services/konsilUploadService";
-
-const APP_ORIGIN =
-  import.meta.env.VITE_PUBLIC_APP_ORIGIN || window.location.origin;
+import { lanUploadUrlForToken } from "@/utils/konsilUpload";
 
 export function MobileCaptureQrModal({
   open,
@@ -18,18 +16,26 @@ export function MobileCaptureQrModal({
   onClose: () => void;
   onSimulateUpload: (images: ImageAttachment[]) => void;
 }) {
-  const sessionToken = useMemo(
-    () => `sess-${Math.random().toString(36).slice(2, 10)}`,
-    [open]
-  );
+  const sessionTokenRef = useRef(`sess-${Math.random().toString(36).slice(2, 10)}`);
 
-  const uploadUrl = `${APP_ORIGIN}/upload/konsil/${sessionToken}`;
+  useEffect(() => {
+    if (open) {
+      sessionTokenRef.current = `sess-${Math.random().toString(36).slice(2, 10)}`;
+    }
+  }, [open]);
+
+  const sessionToken = sessionTokenRef.current;
+
+  const uploadUrl = lanUploadUrlForToken(sessionToken);
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(uploadUrl)}`;
 
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
+    let inflight = false;
     const interval = setInterval(async () => {
+      if (inflight) return;
+      inflight = true;
       try {
         const images = await konsilUploadService.pollSession(sessionToken);
         if (!cancelled && images.length > 0) {
@@ -38,6 +44,8 @@ export function MobileCaptureQrModal({
         }
       } catch {
         // ignore transient poll errors
+      } finally {
+        inflight = false;
       }
     }, 2000);
     return () => {
