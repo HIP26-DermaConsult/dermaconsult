@@ -128,11 +128,17 @@ export default function PatientUploadPage() {
                   <UploadCloud className="w-4 h-4 text-violet-600" /> Bilder zum Konsil hochladen
                 </span>
               }
-              description={`Ziel: ${state.konsilId}`}
+              description={
+                state.konsilId === "SESSION"
+                  ? "Smartphone-Upload"
+                  : `Ziel: ${state.konsilId}`
+              }
               action={
-                <Badge className="bg-ink-100 text-ink-700 ring-ink-200">
-                  {source === "hausarzt" ? "Hausarzt:in" : "Patient:in"}
-                </Badge>
+                state.konsilId !== "SESSION" ? (
+                  <Badge className="bg-ink-100 text-ink-700 ring-ink-200">
+                    {source === "hausarzt" ? "Hausarzt:in" : "Patient:in"}
+                  </Badge>
+                ) : undefined
               }
             />
             <CardBody className="space-y-5">
