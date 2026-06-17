@@ -53,6 +53,12 @@ export const konsilUploadService = {
       method: "POST",
     });
   },
+
+  async pollSession(sessionToken: string): Promise<ImageAttachment[]> {
+    return request<ImageAttachment[]>(
+      `/api/session-upload/${encodeURIComponent(sessionToken)}`
+    );
+  },
 };
 
 export function absoluteImageUrl(image: ImageAttachment): string | undefined {
