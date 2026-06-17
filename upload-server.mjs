@@ -38,7 +38,7 @@ function parseToken(token) {
   }
   if (token.startsWith("sess-")) {
     const id = token.slice("sess-".length);
-    if (id.length > 0) return { type: "session", id: token };
+    if (/^[a-z0-9]{4,}$/.test(id)) return { type: "session", id: token };
   }
   return null;
 }
