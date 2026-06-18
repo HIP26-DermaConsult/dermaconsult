@@ -41,13 +41,16 @@ export default function ExpertKonsilDetailPage() {
 
   const [internalNote, setInternalNote] = useState("");
   const [a, setA] = useState<ExpertAssessment>({
-    assessment: "",
-    recommendedDiagnosis: "",
-    differentialDiagnoses: [],
-    recommendedTreatment: "",
-    nextSteps: "",
-    inPersonAppointmentRecommended: false,
-    urgencyRecommendation: "routine",
+    assessment:
+      "Die übersandten Aufnahmen zeigen ein ca. 8 mm großes, flaches Pigmentmal am dorsalen rechten Unterarm. Dermoskopisch imponiert ein unregelmäßiges Pigmentnetz mit fokaler Unterbrechung am Randbereich sowie eine inhomogene Braun-Schwarz-Tönung zentral. Eine Regression oder ein blau-weißer Schleier ist nicht eindeutig nachweisbar. Das Gesamtbild entspricht einem klinisch atypischen melanozytären Nävus (Clark-Nävus Grad II–III). Ein malignes Melanom in Frühstadium kann anhand der vorliegenden Bildgebung nicht mit ausreichender Sicherheit ausgeschlossen werden.",
+    recommendedDiagnosis: "Atypischer melanozytärer Nävus (Clark-Nävus), DD: Malignes Melanom in situ (D03.6)",
+    differentialDiagnoses: ["Malignes Melanom in situ", "Dysplastischer Nävus", "Pigmentiertes Basalzellkarzinom"],
+    recommendedTreatment:
+      "Exzision des Pigmentmals mit einem Sicherheitsabstand von mindestens 2 mm und anschließende histopathologische Aufarbeitung. Keine topische Therapie indiziert.",
+    nextSteps:
+      "Zeitnahe Überweisung in die dermatologische Ambulanz zur Exzisionsplanung. Lichtschutz der Läsion bis zur Entfernung empfohlen. Nach Histologie ggf. Nachexzision je nach Breslow-Dicke.",
+    inPersonAppointmentRecommended: true,
+    urgencyRecommendation: "soon",
     authoredAt: "",
     authoredBy: "",
   });

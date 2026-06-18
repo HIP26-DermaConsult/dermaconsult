@@ -110,8 +110,12 @@ export function ImageUploadArea({
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {images.map((img) => (
               <div key={img.id} className="rounded-lg border border-ink-200 bg-white overflow-hidden group">
-                <div className="aspect-square bg-gradient-to-br from-ink-100 to-ink-200 grid place-items-center relative">
-                  <ImageIcon className="w-8 h-8 text-ink-400" />
+                <div className="aspect-square bg-gradient-to-br from-ink-100 to-ink-200 grid place-items-center relative overflow-hidden">
+                  {img.previewUrl ? (
+                    <img src={img.previewUrl} alt={img.label ?? img.filename} className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-ink-400" />
+                  )}
                   <button
                     type="button"
                     onClick={() => remove(img.id)}

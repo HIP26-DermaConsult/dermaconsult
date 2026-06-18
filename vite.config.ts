@@ -2,7 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  define: {
+    __SERVER_START__: JSON.stringify(Date.now().toString()),
+  },
   plugins: [react()],
   resolve: {
     alias: {
@@ -18,4 +21,4 @@ export default defineConfig({
       "/uploads": "http://localhost:3001",
     },
   },
-});
+}));

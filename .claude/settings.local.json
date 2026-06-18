@@ -26,7 +26,21 @@
       "Bash(grep -oE \"'[^']{3,40}'\" perm.js)",
       "Bash(grep -oE '\"[^\"]{3,40}\"' perm.js)",
       "Bash(curl -s -o body.txt -w \"GET docservice -> HTTP %{http_code} bytes=%{size_download}\\\\n\" \"https://arzt.bayern/docservice\")",
-      "Bash(curl -s -X POST -H 'Content-Type: text/x-gwt-rpc; charset=utf-8' --data x -o body2.txt -w 'POST docservice -> HTTP %{http_code} bytes=%{size_download}\\\\n' https://arzt.bayern/docservice)"
+      "Bash(curl -s -X POST -H 'Content-Type: text/x-gwt-rpc; charset=utf-8' --data x -o body2.txt -w 'POST docservice -> HTTP %{http_code} bytes=%{size_download}\\\\n' https://arzt.bayern/docservice)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git reset *)",
+      "Bash(curl -s http://localhost:5174/api/network-info)",
+      "Bash(curl -s http://localhost:5174/)",
+      "Bash(curl -v http://localhost:5174/api/network-info)",
+      "Bash(curl -s -X POST http://localhost:5174/api/konsil-upload/test-token -H \"Content-Type: application/json\")",
+      "Bash(npm ls *)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "Bash(curl -sL \"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Back_mole_hit_with.jpg/800px-Back_mole_hit_with.jpg\" -o /Users/giursan/Documents/Coding/derma-consult/public/demo/naevus_uebersicht.jpg)",
+      "Bash(curl -sL \"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Nevus_melanoc%C3%ADtico_intrad%C3%A9rmico_%28RPS_09-12-2019%29_imagen_dermatosc%C3%B3pica.jpg/800px-Nevus_melanoc%C3%ADtico_intrad%C3%A9rmico_%28RPS_09-12-2019%29_imagen_dermatosc%C3%B3pica.jpg\" -o /Users/giursan/Documents/Coding/derma-consult/public/demo/naevus_dermatoskopie.jpg)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" \"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Back_mole_hit_with.jpg/800px-Back_mole_hit_with.jpg\" -o /Users/giursan/Documents/Coding/derma-consult/public/demo/naevus_uebersicht.jpg)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://upload.wikimedia.org/wikipedia/commons/9/95/Back_mole_hit_with.jpg\" -o /Users/giursan/Documents/Coding/derma-consult/public/demo/naevus_uebersicht.jpg)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://upload.wikimedia.org/wikipedia/commons/a/a5/Nevus_melanoc%C3%ADtico_intrad%C3%A9rmico_%28RPS_09-12-2019%29_imagen_dermatosc%C3%B3pica.jpg\" -o /Users/giursan/Documents/Coding/derma-consult/public/demo/naevus_dermatoskopie.jpg)"
     ]
   }
 }

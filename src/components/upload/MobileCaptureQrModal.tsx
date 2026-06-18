@@ -57,8 +57,22 @@ export function MobileCaptureQrModal({
   function simulate() {
     const now = new Date().toISOString();
     onSimulateUpload([
-      { id: uid("img"), filename: "smartphone_übersicht.jpg", source: "mobile", uploadedAt: now, label: "Übersicht" },
-      { id: uid("img"), filename: "smartphone_nähe.jpg", source: "mobile", uploadedAt: now, label: "Nähe" },
+      {
+        id: uid("img"),
+        filename: "smartphone_übersicht.jpg",
+        source: "mobile",
+        uploadedAt: now,
+        label: "Übersicht",
+        previewUrl: "/demo/naevus_1.jpg",
+      },
+      {
+        id: uid("img"),
+        filename: "smartphone_dermatoskopie.jpg",
+        source: "mobile",
+        uploadedAt: now,
+        label: "Dermatoskopie",
+        previewUrl: "/demo/naevus_2.jpg",
+      },
     ]);
     onClose();
   }
