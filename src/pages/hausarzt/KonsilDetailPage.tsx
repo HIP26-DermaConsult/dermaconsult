@@ -10,6 +10,7 @@ import {
   Share2,
   FilePlus2,
   CheckCircle2,
+  Save,
 } from "lucide-react";
 import { useKonsil } from "@/hooks/useKonsile";
 import { usePatient } from "@/hooks/usePatients";
@@ -33,12 +34,15 @@ import { SharePatientSummaryModal } from "@/components/konsile/SharePatientSumma
 import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
 import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
 import { KonsilUploadsCard } from "@/components/konsile/KonsilUploadsCard";
+import { ReferralFormSheet } from "@/components/konsile/ReferralFormSheet";
 import { StatusBadge, UrgencyBadge } from "@/components/ui/StatusBadge";
 import { CopyableLink } from "@/components/ui/CopyableLink";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatDate, formatDateTime } from "@/utils/formatters";
 import { lanUploadUrlForToken } from "@/utils/konsilUpload";
+import { referralFormFromKonsil, validateReferralForm } from "@/utils/referralForm";
+import type { ReferralForm } from "@/types/konsil";
 
 export default function HausarztKonsilDetailPage() {
   const { id } = useParams();
@@ -51,7 +55,10 @@ export default function HausarztKonsilDetailPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [reply, setReply] = useState("");
+  const [referralDraft, setReferralDraft] = useState<ReferralForm | undefined>();
+  const [missingReferralFields, setMissingReferralFields] = useState<string[]>([]);
   const [sending, setSending] = useState(false);
+  const [savingReferral, setSavingReferral] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [requestOpen, setRequestOpen] = useState(false);
   const [appOrigin, setAppOrigin] = useState<string | undefined>();
@@ -62,6 +69,11 @@ export default function HausarztKonsilDetailPage() {
       .then((info) => setAppOrigin(info.appOrigin))
       .catch(() => setAppOrigin(undefined));
   }, []);
+
+  useEffect(() => {
+    if (!konsil) return;
+    setReferralDraft(referralFormFromKonsil(konsil, patient, user));
+  }, [konsil, patient, user]);
 
   if (loading || !konsil) {
     return (
@@ -106,6 +118,28 @@ export default function HausarztKonsilDetailPage() {
     toast({ variant: "success", title: "Uploads als geprueft markiert" });
   }
 
+  async function saveReferralForm() {
+    if (!konsil || !referralDraft) return;
+    const missing = validateReferralForm(referralDraft);
+    setMissingReferralFields(missing);
+    if (missing.length > 0) {
+      toast({
+        variant: "error",
+        title: "Überweisungsschein unvollständig",
+        description: `Bitte ergänzen: ${missing.join(", ")}.`,
+      });
+      return;
+    }
+    setSavingReferral(true);
+    try {
+      await konsilService.updateReferralForm(konsil.id, referralDraft);
+      await refresh();
+      toast({ variant: "success", title: "Überweisungsschein gespeichert" });
+    } finally {
+      setSavingReferral(false);
+    }
+  }
+
   const patientUploadUrl = lanUploadUrlForToken(konsil.uploadToken, appOrigin);
   const hausarztUploadUrl = `${patientUploadUrl}?source=hausarzt`;
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(hausarztUploadUrl)}`;
@@ -142,6 +176,30 @@ export default function HausarztKonsilDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {referralDraft && (
+            <Card>
+              <CardHeader
+                title="Überweisungsschein"
+                description="Muster-6-inspirierte Überweisung an die Dermatologie"
+                action={
+                  <Button variant="outline" onClick={saveReferralForm} loading={savingReferral}>
+                    <Save className="w-4 h-4" /> Speichern
+                  </Button>
+                }
+              />
+              <CardBody>
+                <ReferralFormSheet
+                  value={referralDraft}
+                  onChange={(next) => {
+                    setReferralDraft(next);
+                    setMissingReferralFields(validateReferralForm(next));
+                  }}
+                  missingFields={missingReferralFields}
+                />
+              </CardBody>
+            </Card>
+          )}
+
           <Card>
             <CardHeader
               title={

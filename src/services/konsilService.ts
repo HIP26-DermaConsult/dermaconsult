@@ -5,6 +5,7 @@ import type {
   KonsilStatus,
   Message,
   NewKonsilInput,
+  ReferralForm,
   TimelineEvent,
 } from "@/types/konsil";
 import { uid } from "@/utils/formatters";
@@ -55,6 +56,7 @@ export const konsilService = {
       suspectedDiagnosis: input.suspectedDiagnosis,
       previousTreatments: input.previousTreatments,
       additionalInfo: input.additionalInfo,
+      referralForm: input.referralForm,
       selectedBodyRegions: input.selectedBodyRegions,
       images: input.images,
       messages: [],
@@ -65,6 +67,19 @@ export const konsilService = {
     };
     save([konsil, ...load()]);
     return konsil;
+  },
+  async updateReferralForm(id: string, referralForm: ReferralForm): Promise<Konsil> {
+    await wait();
+    const all = load();
+    const idx = all.findIndex((k) => k.id === id);
+    if (idx === -1) throw new Error("Konsil nicht gefunden");
+    all[idx] = {
+      ...all[idx],
+      referralForm,
+      updatedAt: new Date().toISOString(),
+    };
+    save(all);
+    return all[idx];
   },
   async updateStatus(id: string, status: KonsilStatus, by: string): Promise<Konsil> {
     await wait();

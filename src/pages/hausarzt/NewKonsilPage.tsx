@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Send, CheckCircle2, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,11 +15,13 @@ import { NewPatientModal } from "@/components/patients/NewPatientModal";
 import type { Patient } from "@/types/patient";
 import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
 import { ImageUploadArea } from "@/components/upload/ImageUploadArea";
+import { ReferralFormSheet } from "@/components/konsile/ReferralFormSheet";
 import { UrgencyBadge } from "@/components/ui/StatusBadge";
 import { Badge } from "@/components/ui/Badge";
-import type { BodyRegionId, ImageAttachment, Urgency } from "@/types/konsil";
+import type { BodyRegionId, ImageAttachment, ReferralForm, Urgency } from "@/types/konsil";
 import { BODY_REGION_LABELS } from "@/utils/constants";
 import { cn } from "@/utils/formatters";
+import { buildReferralFormDefaults, validateReferralForm } from "@/utils/referralForm";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 const STEPS = [
@@ -56,11 +58,24 @@ export default function NewKonsilPage() {
   const [additionalInfo, setAdditionalInfo] = useState(
     "Patientin (Gartenarchitektin, Hauttyp II) mit beruflich erhöhter UV-Exposition. Keine bekannten Allergien. Keine Immunsuppression."
   );
+  const [referralForm, setReferralForm] = useState<ReferralForm | undefined>();
+  const [missingReferralFields, setMissingReferralFields] = useState<string[]>([]);
   const [regions, setRegions] = useState<BodyRegionId[]>([]);
   const [images, setImages] = useState<ImageAttachment[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const patient = useMemo(() => patients.find((p) => p.id === patientId), [patientId, patients]);
+
+  useEffect(() => {
+    if (step !== 4 || referralForm) return;
+    setReferralForm(
+      buildReferralFormDefaults({
+        patient,
+        user,
+        source: { reason, clinicalDescription, suspectedDiagnosis, previousTreatments },
+      })
+    );
+  }, [clinicalDescription, patient, previousTreatments, reason, referralForm, step, suspectedDiagnosis, user]);
 
   const stepValid: Record<Step, boolean> = {
     0: !!patientId,
@@ -79,6 +94,23 @@ export default function NewKonsilPage() {
 
   async function submit() {
     if (!user || !patientId) return;
+    const form =
+      referralForm ??
+      buildReferralFormDefaults({
+        patient,
+        user,
+        source: { reason, clinicalDescription, suspectedDiagnosis, previousTreatments },
+      });
+    const missing = validateReferralForm(form);
+    setMissingReferralFields(missing);
+    if (missing.length > 0) {
+      toast({
+        variant: "error",
+        title: "Überweisungsschein unvollständig",
+        description: `Bitte ergänzen: ${missing.join(", ")}.`,
+      });
+      return;
+    }
     setSubmitting(true);
     try {
       const konsil = await konsilService.create(
@@ -91,6 +123,7 @@ export default function NewKonsilPage() {
           suspectedDiagnosis: suspectedDiagnosis || undefined,
           previousTreatments: previousTreatments || undefined,
           additionalInfo: additionalInfo || undefined,
+          referralForm: form,
           selectedBodyRegions: regions,
           images,
         },
@@ -228,6 +261,29 @@ export default function NewKonsilPage() {
               />
               <CardBody>
                 <ImageUploadArea images={images} onChange={setImages} />
+              </CardBody>
+            </Card>
+          )}
+
+          {step === 4 && (
+            <Card>
+              <CardHeader title="Überweisungsschein" description="Bitte prüfen und fehlende Pflichtfelder ergänzen." />
+              <CardBody>
+                <ReferralFormSheet
+                  value={
+                    referralForm ??
+                    buildReferralFormDefaults({
+                      patient,
+                      user,
+                      source: { reason, clinicalDescription, suspectedDiagnosis, previousTreatments },
+                    })
+                  }
+                  onChange={(next) => {
+                    setReferralForm(next);
+                    setMissingReferralFields(validateReferralForm(next));
+                  }}
+                  missingFields={missingReferralFields}
+                />
               </CardBody>
             </Card>
           )}

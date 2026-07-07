@@ -67,6 +67,38 @@ export interface ExpertAssessment {
   authoredBy: string;
 }
 
+export interface ReferralForm {
+  referringPractice: string;
+  patientDisplay: string;
+  patientDateOfBirth: string;
+  insuranceName: string;
+  insuranceFundNumber: string;
+  insuranceNumber: string;
+  insuranceStatus: string;
+  bsnr: string;
+  lanr: string;
+  issueDate: string;
+  kurativ: boolean;
+  praeventiv: boolean;
+  otherPayer: boolean;
+  accident: boolean;
+  accidentConsequences: boolean;
+  limitedEntitlement: boolean;
+  asv: boolean;
+  inpatientTreatment: boolean;
+  referralTo: string;
+  orderService: boolean;
+  consultantExamination: boolean;
+  coTreatment: boolean;
+  furtherTreatment: boolean;
+  auUntil: string;
+  surgeryDate: string;
+  diagnosis: string;
+  findingsMedication: string;
+  order: string;
+  signature: string;
+}
+
 export interface TimelineEvent {
   id: string;
   type:
@@ -100,6 +132,7 @@ export interface Konsil {
   suspectedDiagnosis?: string;
   previousTreatments?: string;
   additionalInfo?: string;
+  referralForm?: ReferralForm;
   selectedBodyRegions: BodyRegionId[];
   images: ImageAttachment[];
   messages: Message[];
@@ -116,6 +149,7 @@ export interface NewKonsilInput {
   suspectedDiagnosis?: string;
   previousTreatments?: string;
   additionalInfo?: string;
+  referralForm?: ReferralForm;
   selectedBodyRegions: BodyRegionId[];
   images: ImageAttachment[];
 }

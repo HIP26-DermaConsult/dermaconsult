@@ -20,11 +20,13 @@ import { MessageThread } from "@/components/konsile/MessageThread";
 import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
 import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
 import { KonsilUploadsCard } from "@/components/konsile/KonsilUploadsCard";
+import { ReferralFormSheet } from "@/components/konsile/ReferralFormSheet";
 import { StatusBadge, UrgencyBadge } from "@/components/ui/StatusBadge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { ExpertAssessment, Urgency } from "@/types/konsil";
 import { formatDateTime } from "@/utils/formatters";
 import { Modal } from "@/components/ui/Modal";
+import { referralFormFromKonsil } from "@/utils/referralForm";
 
 const STORAGE_PREFIX = "derma_consult_draft_";
 
@@ -145,6 +147,7 @@ export default function ExpertKonsilDetailPage() {
   }
 
   const canEditAssessment = konsil.status !== "closed";
+  const referralForm = referralFormFromKonsil(konsil, patient);
 
   return (
     <>
@@ -180,6 +183,16 @@ export default function ExpertKonsilDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader
+              title="Überweisungsschein"
+              description="Vom Hausarzt ausgefüllte Überweisung"
+            />
+            <CardBody>
+              <ReferralFormSheet value={referralForm} readOnly />
+            </CardBody>
+          </Card>
+
           <Card>
             <CardHeader
               title={
