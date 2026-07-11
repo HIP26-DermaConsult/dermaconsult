@@ -1,3 +1,22 @@
 {
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/invite/:token", "destination": "/index.html" },
+    { "source": "/upload/konsil/:token", "destination": "/index.html" },
+    { "source": "/upload/:token", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/konsile", "destination": "/index.html" },
+    { "source": "/konsile/new", "destination": "/index.html" },
+    { "source": "/konsile/:id", "destination": "/index.html" },
+    { "source": "/patients", "destination": "/index.html" },
+    { "source": "/patients/new", "destination": "/index.html" },
+    { "source": "/patients/:id", "destination": "/index.html" },
+    { "source": "/patients/:id/edit", "destination": "/index.html" },
+    { "source": "/expert/dashboard", "destination": "/index.html" },
+    { "source": "/expert/konsile", "destination": "/index.html" },
+    { "source": "/expert/konsile/:id", "destination": "/index.html" },
+    { "source": "/expert/activity", "destination": "/index.html" },
+    { "source": "/portal", "destination": "/index.html" },
+    { "source": "/portal/consultations/:konsilId", "destination": "/index.html" }
+  ]
 }
