@@ -4,8 +4,6 @@ import {
   ArrowLeft,
   Download,
   Lock,
-  MessageSquarePlus,
-  Send,
   Stethoscope,
   Share2,
   FilePlus2,
@@ -29,7 +27,7 @@ import { AiAssessmentCard } from "@/components/konsile/AiAssessmentCard";
 import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
 import { ImageGallery } from "@/components/konsile/ImageGallery";
 import { Timeline } from "@/components/konsile/Timeline";
-import { MessageThread } from "@/components/konsile/MessageThread";
+import { FloatingMessages } from "@/components/konsile/MessagesThreadPopup";
 import { SharePatientSummaryModal } from "@/components/konsile/SharePatientSummaryModal";
 import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
 import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
@@ -235,31 +233,6 @@ export default function HausarztKonsilDetailPage() {
               </CardBody>
             </Card>
           )}
-
-          <Card>
-            <CardHeader title="Kommunikation" description="Thread mit der Dermatologie" />
-            <CardBody className="space-y-4">
-              <MessageThread messages={konsil.messages} />
-              {konsil.status !== "closed" && (
-                <div className="border-t border-ink-100 pt-4 space-y-2">
-                  <Textarea
-                    rows={3}
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                    placeholder="Antwort oder Zusatzinformation an die Dermatologie…"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setReply("")} disabled={!reply}>
-                      <MessageSquarePlus className="w-4 h-4" /> Verwerfen
-                    </Button>
-                    <Button onClick={sendReply} loading={sending} disabled={!reply.trim()}>
-                      <Send className="w-4 h-4" /> Senden
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardBody>
-          </Card>
         </div>
 
         <div className="space-y-6">
@@ -318,6 +291,17 @@ export default function HausarztKonsilDetailPage() {
           </Card>
         </div>
       </div>
+
+
+        <FloatingMessages
+            messages={konsil.messages}
+            description={"Thread mit der Dermatologie"}
+            reply={reply}
+            setReply={setReply}
+            sending={sending}
+            onSend={sendReply}
+        />
+
 
       <SharePatientSummaryModal
         open={shareOpen}

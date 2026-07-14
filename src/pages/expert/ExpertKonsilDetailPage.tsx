@@ -17,7 +17,7 @@ import { AiAssessmentCard } from "@/components/konsile/AiAssessmentCard";
 import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
 import { ImageGallery } from "@/components/konsile/ImageGallery";
 import { Timeline } from "@/components/konsile/Timeline";
-import { MessageThread } from "@/components/konsile/MessageThread";
+import { FloatingMessages } from "@/components/konsile/MessagesThreadPopup";
 import { RequestPatientDataModal } from "@/components/konsile/RequestPatientDataModal";
 import { PatientUploadsCard } from "@/components/konsile/PatientUploadsCard";
 import { KonsilUploadsCard } from "@/components/konsile/KonsilUploadsCard";
@@ -329,12 +329,6 @@ export default function ExpertKonsilDetailPage() {
             </CardBody>
           </Card>
 
-          <Card>
-            <CardHeader title="Kommunikation" description="Thread mit dem Hausarzt" />
-            <CardBody>
-              <MessageThread messages={konsil.messages} />
-            </CardBody>
-          </Card>
         </div>
 
         <div className="space-y-6">
@@ -359,6 +353,16 @@ export default function ExpertKonsilDetailPage() {
           </Card>
         </div>
       </div>
+
+        <FloatingMessages
+            messages={konsil.messages}
+            description={"Thread mit der Hausarztpraxis"}
+            reply={rueckfrageText}
+            setReply={setRueckfrageText}
+            sending={false}
+            onSend={sendRueckfrage}
+            closed={konsil.status === "closed"}
+        />
 
       <RequestPatientDataModal
         open={requestOpen}
