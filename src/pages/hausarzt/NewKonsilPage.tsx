@@ -41,12 +41,22 @@ export default function NewKonsilPage() {
   const [step, setStep] = useState<Step>(0);
   const [patientId, setPatientId] = useState<string | undefined>();
   const [urgency, setUrgency] = useState<Urgency>("soon");
-  const [reason, setReason] = useState("");
-  const [clinicalDescription, setClinicalDescription] = useState("");
-  const [symptomDuration, setSymptomDuration] = useState("");
-  const [suspectedDiagnosis, setSuspectedDiagnosis] = useState("");
-  const [previousTreatments, setPreviousTreatments] = useState("");
-  const [additionalInfo, setAdditionalInfo] = useState("");
+  const [reason, setReason] = useState(
+    "Beurteilung eines Pigmentmals am rechten Unterarm – Veränderung nach ABCDE-Kriterien, Melanom ausschließen"
+  );
+  const [clinicalDescription, setClinicalDescription] = useState(
+    "Patientin stellt sich zur Hautkrebsvorsorge vor. Aufgefallen ist ein ca. 8 mm großes, asymmetrisches Pigmentmal am dorsalen rechten Unterarm, handgelenksnah. Laut Angaben der Patientin hat sich die Läsion in den letzten 3 Monaten verändert: zunehmende Größe sowie Farbveränderung (dunkelbraun mit einzelnen fast schwarzen Anteilen, unregelmäßige Begrenzung). Kein Juckreiz, keine Blutung, kein Nässen, keine Schmerzen. Keine B-Symptomatik. Keine positive Familienanamnese für malignes Melanom. Ipsilaterale Lymphknoten klinisch unauffällig."
+  );
+  const [symptomDuration, setSymptomDuration] = useState("ca. 3 Monate");
+  const [suspectedDiagnosis, setSuspectedDiagnosis] = useState(
+    "Dysplastischer Nävus, malignes Melanom nicht auszuschließen"
+  );
+  const [previousTreatments, setPreviousTreatments] = useState(
+    "Keine lokale Therapie; letzter Hautcheck vor 2 Jahren ohne Befund"
+  );
+  const [additionalInfo, setAdditionalInfo] = useState(
+    "Patientin (Gartenarchitektin, Hauttyp II) mit beruflich erhöhter UV-Exposition. Keine bekannten Allergien. Keine Immunsuppression."
+  );
   const [regions, setRegions] = useState<BodyRegionId[]>([]);
   const [images, setImages] = useState<ImageAttachment[]>([]);
   const [submitting, setSubmitting] = useState(false);
