@@ -138,6 +138,7 @@ export interface Konsil {
   images: ImageAttachment[];
   messages: Message[];
   expertAssessment?: ExpertAssessment;
+  aiAssessment?: AiAssessment;
   timeline: TimelineEvent[];
 }
 

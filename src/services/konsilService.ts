@@ -1,4 +1,5 @@
 import { mockKonsile } from "@/data/mockKonsile";
+import { mockUsers } from "@/data/mockUsers";
 import type {
   AiAssessment,
   ExpertAssessment,
@@ -10,8 +11,15 @@ import type {
 } from "@/types/konsil";
 import { uid } from "@/utils/formatters";
 import { ensureKonsilUploadToken, uploadTokenForKonsilId } from "@/utils/konsilUpload";
+import { notificationService } from "@/services/notificationService";
 
 const STORAGE_KEY = "derma_consult_konsile";
+
+const dermatologistIds = () => mockUsers.filter((u) => u.role === "dermatologist").map((u) => u.id);
+
+// Not yet picked up by a specific expert -> broadcast to every dermatologist account.
+const dermatologyRecipients = (konsil: Konsil) =>
+  konsil.assignedExpertId ? [konsil.assignedExpertId] : dermatologistIds();
 
 function load(): Konsil[] {
   try {
@@ -65,6 +73,12 @@ export const konsilService = {
       ],
     };
     save([konsil, ...load()]);
+    notificationService.notify(dermatologistIds(), {
+      type: "konsil_submitted",
+      title: "Neues Konsil eingegangen",
+      description: konsil.reason,
+      konsilId: konsil.id,
+    });
     return konsil;
   },
   async updateStatus(id: string, status: KonsilStatus, by: string): Promise<Konsil> {
@@ -127,7 +141,16 @@ export const konsilService = {
       ],
     };
     save(all);
-    return all[idx];
+    const updated = all[idx];
+    const recipients =
+      message.senderRole === "hausarzt" ? dermatologyRecipients(updated) : [updated.createdByUserId];
+    notificationService.notify(recipients, {
+      type: "message",
+      title: `Neue Nachricht von ${message.senderName}`,
+      description: message.body,
+      konsilId: updated.id,
+    });
+    return updated;
   },
   async submitAssessment(
     id: string,
@@ -157,7 +180,14 @@ export const konsilService = {
       ],
     };
     save(all);
-    return all[idx];
+    const updated = all[idx];
+    notificationService.notify([updated.createdByUserId], {
+      type: "answered",
+      title: "Befund erhalten",
+      description: assessment.recommendedDiagnosis,
+      konsilId: updated.id,
+    });
+    return updated;
   },
   async saveAiAssessment(id: string, assessment: AiAssessment): Promise<Konsil> {
     await wait();
@@ -188,7 +218,16 @@ export const konsilService = {
       ],
     };
     save(all);
-    return all[idx];
+    const updated = all[idx];
+    const recipients =
+      by.role === "hausarzt" ? dermatologyRecipients(updated) : [updated.createdByUserId];
+    notificationService.notify(recipients, {
+      type: "rueckfrage",
+      title: "Rückfrage erhalten",
+      description: body,
+      konsilId: updated.id,
+    });
+    return updated;
   },
 };
 
