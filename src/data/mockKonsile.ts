@@ -27,7 +27,7 @@ export const mockKonsile: Konsil[] = [
     suspectedDiagnosis: "Kontaktekzem",
     previousTreatments: "Mometason 0,1% Creme 2x täglich für 10 Tage",
     additionalInfo: "Patientin arbeitet in der Gastronomie, häufiger Wasserkontakt.",
-    selectedBodyRegions: ["hand-left", "hand-right"],
+    selectedBodyRegions: ["hand-left-back", "hand-right-back"],
     images: [
       { id: "i1", filename: "hand_links_01.jpg", source: "desktop", uploadedAt: d(8), label: "Übersicht" },
       { id: "i2", filename: "hand_rechts_dermatoskopie.jpg", source: "mobile", uploadedAt: d(8), label: "Dermatoskopie" },
@@ -85,7 +85,7 @@ export const mockKonsile: Konsil[] = [
     symptomDuration: "3 Wochen",
     suspectedDiagnosis: "V. a. Plattenepithelkarzinom",
     previousTreatments: "Keine",
-    selectedBodyRegions: ["head"],
+    selectedBodyRegions: ["head-front"],
     images: [
       { id: "i3", filename: "schläfe_übersicht.jpg", source: "desktop", uploadedAt: d(2), label: "Übersicht" },
       { id: "i4", filename: "schläfe_nähe.jpg", source: "desktop", uploadedAt: d(2), label: "Nähe" },
@@ -123,7 +123,7 @@ export const mockKonsile: Konsil[] = [
     suspectedDiagnosis: "Acne tarda",
     previousTreatments:
       "Adapalen 0,1% / Benzoylperoxid 2,5% Gel 1x abends, Doxycyclin 100 mg über 12 Wochen",
-    selectedBodyRegions: ["head", "neck"],
+    selectedBodyRegions: ["head-front", "neck-front"],
     images: [
       { id: "i6", filename: "gesicht_links.jpg", source: "mobile", uploadedAt: d(5) },
       { id: "i7", filename: "gesicht_rechts.jpg", source: "mobile", uploadedAt: d(5) },
@@ -165,7 +165,7 @@ export const mockKonsile: Konsil[] = [
     clinicalDescription:
       "Routinekontrolle bei multiplen Nävi am Rücken. Ein Nävus paravertebral links mit unscharfer Begrenzung.",
     symptomDuration: "Bekannt seit Jahren",
-    selectedBodyRegions: ["back"],
+    selectedBodyRegions: ["upper-back"],
     images: [
       { id: "i8", filename: "rücken_übersicht.jpg", source: "desktop", uploadedAt: d(12), label: "Übersicht" },
       { id: "i9", filename: "rücken_naevus.jpg", source: "desktop", uploadedAt: d(12), label: "Dermatoskopie" },
@@ -221,7 +221,7 @@ export const mockKonsile: Konsil[] = [
     suspectedDiagnosis: "Atopisches Ekzem Schub",
     previousTreatments: "Basispflege mit Linola, Hydrocortison 1%",
     additionalInfo: "Patientin wirkt sehr leidvoll, deutlicher Juckreiz, Schlafstörung.",
-    selectedBodyRegions: ["back", "neck"],
+    selectedBodyRegions: ["upper-back", "neck-back"],
     images: [
       { id: "i10", filename: "rücken_kind_01.jpg", source: "mobile", uploadedAt: d(0, 9), label: "Übersicht" },
     ],
@@ -247,7 +247,7 @@ export const mockKonsile: Konsil[] = [
     symptomDuration: "ca. 4 Monate",
     suspectedDiagnosis: "Psoriasis vulgaris",
     previousTreatments: "Keine",
-    selectedBodyRegions: ["arm-left", "arm-right", "leg-left", "leg-right"],
+    selectedBodyRegions: ["upper-arm-left-back", "forearm-left-back", "upper-arm-right-back", "forearm-right-back", "thigh-left-front", "lower-leg-left-front", "thigh-right-front", "lower-leg-right-front"],
     images: [
       { id: "i11", filename: "ellenbogen.jpg", source: "desktop", uploadedAt: d(14) },
       { id: "i12", filename: "knie.jpg", source: "desktop", uploadedAt: d(14) },
@@ -294,7 +294,7 @@ export const mockKonsile: Konsil[] = [
     symptomDuration: "6 Monate",
     suspectedDiagnosis: "Onychomykose",
     previousTreatments: "Bifonazol Nagelset OTC",
-    selectedBodyRegions: ["foot-right"],
+    selectedBodyRegions: ["foot-right-front"],
     images: [
       { id: "i13", filename: "zehennagel.jpg", source: "desktop", uploadedAt: d(1, 14) },
     ],

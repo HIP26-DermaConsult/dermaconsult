@@ -62,7 +62,18 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://dermaconsult.vercel.app/konsile/K-2026-0003)",
       "Bash(curl -sI https://dermaconsult.vercel.app/konsile/K-2026-0003)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://dermaconsult.vercel.app/api/network-info)",
-      "Bash(curl -s https://dermaconsult.vercel.app/api/network-info)"
+      "Bash(curl -s https://dermaconsult.vercel.app/api/network-info)",
+      "Bash(curl -s https://dermaconsult.vercel.app/api/konsil-upload/konsil-K-2026-0003)",
+      "Bash(curl -s https://dermaconsult.vercel.app/api/konsil-upload/bogus)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://dermaconsult.vercel.app/upload/konsil/konsil-K-2026-0003)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://dermaconsult-git-develop-derma-consult.vercel.app/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://dermaconsult-git-develop-derma-consult.vercel.app/konsile/K-2026-0003)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://dermaconsult-git-develop-derma-consult.vercel.app/api/network-info)",
+      "Bash(curl -s https://dermaconsult-git-develop-derma-consult.vercel.app/api/network-info)",
+      "Bash(curl *)",
+      "Bash(git commit *)",
+      "Bash(curl -sI https://dermaconsult.vercel.app/api/network-info)",
+      "Bash(curl -s https://dermaconsult.vercel.app/api/konsil-upload/sess-abc12345)"
     ]
   }
 }

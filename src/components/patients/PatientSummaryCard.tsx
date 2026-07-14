@@ -77,11 +77,11 @@ function InfoRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-2">
+    <div className="flex items-start gap-2 min-w-0">
       <div className="mt-0.5">{icon}</div>
-      <div>
+      <div className="min-w-0">
         <div className="text-xs text-ink-500">{label}</div>
-        <div className="text-ink-800">{children}</div>
+        <div className="text-ink-800 break-words">{children}</div>
       </div>
     </div>
   );
