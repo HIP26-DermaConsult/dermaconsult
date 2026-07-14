@@ -95,6 +95,12 @@ export interface ExpertAssessment {
   authoredBy: string;
 }
 
+export interface AiAssessment {
+  content: string;
+  model: string;
+  generatedAt: string;
+}
+
 export interface TimelineEvent {
   id: string;
   type:

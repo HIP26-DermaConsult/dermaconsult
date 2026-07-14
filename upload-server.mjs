@@ -4,6 +4,7 @@ import { createReadStream } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { randomUUID } from "node:crypto";
 import { networkInterfaces } from "node:os";
+import { generateAiAssessment } from "./ai-assessment.mjs";
 
 const PORT = Number(process.env.UPLOAD_PORT || 3001);
 const ROOT = process.cwd();
@@ -200,6 +201,13 @@ createServer(async (req, res) => {
       );
       await saveDb(db);
       return sendJson(res, 200, db.uploads.filter((upload) => upload.konsilId === konsilId));
+    }
+
+    const aiAssessmentMatch = url.pathname.match(/^\/api\/konsile\/([^/]+)\/ai-assessment$/);
+    if (req.method === "POST" && aiAssessmentMatch) {
+      const body = JSON.parse((await getBody(req)).toString("utf8") || "{}");
+      const result = await generateAiAssessment(body.konsil, body.patient);
+      return sendJson(res, 200, result);
     }
 
     const sessionPollMatch = url.pathname.match(/^\/api\/session-upload\/([^/]+)$/);

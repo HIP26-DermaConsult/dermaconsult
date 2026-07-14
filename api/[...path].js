@@ -1,6 +1,7 @@
 import { put, list } from "@vercel/blob";
 import { randomUUID } from "crypto";
 import Busboy from "busboy";
+import { generateAiAssessment } from "../ai-assessment.mjs";
 
 export const config = { api: { bodyParser: false } };
 
@@ -163,6 +164,16 @@ export default async function handler(req, res) {
       );
       await saveDb(db);
       return sendJson(res, 200, db.uploads.filter((u) => u.konsilId === konsilId));
+    }
+
+    // POST /api/konsile/:konsilId/ai-assessment
+    const aiAssessmentMatch = path.match(/^\/konsile\/([^/]+)\/ai-assessment$/);
+    if (req.method === "POST" && aiAssessmentMatch) {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      const body = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+      const result = await generateAiAssessment(body.konsil, body.patient);
+      return sendJson(res, 200, result);
     }
 
     // GET /api/session-upload/:sessionToken

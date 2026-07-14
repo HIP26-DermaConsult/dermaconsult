@@ -13,6 +13,7 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Input";
 import { PatientSummaryCard } from "@/components/patients/PatientSummaryCard";
+import { AiAssessmentCard } from "@/components/konsile/AiAssessmentCard";
 import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
 import { ImageGallery } from "@/components/konsile/ImageGallery";
 import { Timeline } from "@/components/konsile/Timeline";
@@ -31,7 +32,7 @@ const STORAGE_PREFIX = "derma_consult_draft_";
 export default function ExpertKonsilDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { konsil, loading, refresh } = useKonsil(id);
+  const { konsil, loading, refresh, setKonsil } = useKonsil(id);
   const { patient } = usePatient(konsil?.patientId);
   const { requests, refresh: refreshRequests } = useDataRequests(konsil?.id);
   const { uploads, needsReview } = useKonsilUploads(konsil?.id);
@@ -206,6 +207,13 @@ export default function ExpertKonsilDetailPage() {
               )}
             </CardBody>
           </Card>
+
+          <AiAssessmentCard
+            data={konsil}
+            patient={patient}
+            value={konsil.aiAssessment}
+            onChange={async (assessment) => setKonsil(await konsilService.saveAiAssessment(konsil.id, assessment))}
+          />
 
           <Card>
             <CardHeader title="Körperregionen" />

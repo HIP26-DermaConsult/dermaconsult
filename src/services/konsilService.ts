@@ -1,5 +1,6 @@
 import { mockKonsile } from "@/data/mockKonsile";
 import type {
+  AiAssessment,
   ExpertAssessment,
   Konsil,
   KonsilStatus,
@@ -155,6 +156,15 @@ export const konsilService = {
         },
       ],
     };
+    save(all);
+    return all[idx];
+  },
+  async saveAiAssessment(id: string, assessment: AiAssessment): Promise<Konsil> {
+    await wait();
+    const all = load();
+    const idx = all.findIndex((k) => k.id === id);
+    if (idx === -1) throw new Error("Konsil nicht gefunden");
+    all[idx] = { ...all[idx], aiAssessment: assessment };
     save(all);
     return all[idx];
   },

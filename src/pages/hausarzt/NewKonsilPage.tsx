@@ -14,10 +14,11 @@ import { PatientSummaryCard } from "@/components/patients/PatientSummaryCard";
 import { NewPatientModal } from "@/components/patients/NewPatientModal";
 import type { Patient } from "@/types/patient";
 import { BodyRegionSelector } from "@/components/konsile/BodyRegionSelector";
+import { AiAssessmentCard } from "@/components/konsile/AiAssessmentCard";
 import { ImageUploadArea } from "@/components/upload/ImageUploadArea";
 import { UrgencyBadge } from "@/components/ui/StatusBadge";
 import { Badge } from "@/components/ui/Badge";
-import type { BodyRegionId, ImageAttachment, Urgency } from "@/types/konsil";
+import type { AiAssessment, BodyRegionId, ImageAttachment, Urgency } from "@/types/konsil";
 import { BODY_REGION_LABELS } from "@/utils/constants";
 import { cn } from "@/utils/formatters";
 
@@ -59,6 +60,7 @@ export default function NewKonsilPage() {
   const [regions, setRegions] = useState<BodyRegionId[]>([]);
   const [images, setImages] = useState<ImageAttachment[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [aiAssessment, setAiAssessment] = useState<AiAssessment | undefined>();
 
   const patient = useMemo(() => patients.find((p) => p.id === patientId), [patientId, patients]);
 
@@ -97,6 +99,9 @@ export default function NewKonsilPage() {
         user.id,
         user.name
       );
+      if (aiAssessment) {
+        await konsilService.saveAiAssessment(konsil.id, aiAssessment).catch(() => {});
+      }
       toast({ variant: "success", title: "Konsil gesendet", description: `${konsil.id} wurde an die Dermatologie übermittelt.` });
       navigate(`/konsile/${konsil.id}`);
     } catch (e) {
@@ -268,6 +273,25 @@ export default function NewKonsilPage() {
                 </Summary>
               </CardBody>
             </Card>
+          )}
+
+          {step === 4 && (
+            <AiAssessmentCard
+              data={{
+                reason,
+                clinicalDescription,
+                symptomDuration,
+                suspectedDiagnosis: suspectedDiagnosis || undefined,
+                previousTreatments: previousTreatments || undefined,
+                additionalInfo: additionalInfo || undefined,
+                selectedBodyRegions: regions,
+                images,
+              }}
+              patient={patient}
+              value={aiAssessment}
+              onChange={setAiAssessment}
+              autoGenerate
+            />
           )}
 
           <div className="flex items-center justify-between">
